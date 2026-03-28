@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 
 export const Market = ({ signer, account }) => {
   const { address } = useParams();
-  const { data, loading, allowance, approveUSDC, join, resolve } = useCampaign(address, signer, account);
+  const { data, loading, join, resolve } = useCampaign(address, signer, account);
   const [side, setSide] = useState(1); // 1 = YES, 0 = NO
   const [amount, setAmount] = useState("");
   const [txHash, setTxHash] = useState(null);
@@ -21,9 +21,9 @@ export const Market = ({ signer, account }) => {
 
   if (loading || !data.question) return <div style={{ padding: '6rem 0', textAlign: 'center' }}>Fetching market details...</div>;
 
-  const totalPool = ethers.formatUnits(data.yesPool + data.noPool, 6);
+  const totalPool = ethers.formatEther(data.yesPool + data.noPool);
   const sidePool = side === 1 ? data.yesPool : data.noPool;
-  const rawAmount = amount ? ethers.parseUnits(amount, 6) : 0n;
+  const rawAmount = amount ? ethers.parseEther(amount) : 0n;
   
   // Estimated Payout: (your stake / selected pool + your stake) * total pool
   const estPayout = rawAmount > 0n 
@@ -33,14 +33,9 @@ export const Market = ({ signer, account }) => {
   const handleAction = async () => {
     setError(null);
     try {
-      if (allowance < rawAmount) {
-        const hash = await approveUSDC(rawAmount);
-        setTxHash(hash);
-      } else {
-        const hash = await join(side, rawAmount);
-        setTxHash(hash);
-        setAmount("");
-      }
+      const hash = await join(side, rawAmount);
+      setTxHash(hash);
+      setAmount("");
     } catch (err) {
       setError(err.reason || err.message);
     }
@@ -73,7 +68,7 @@ export const Market = ({ signer, account }) => {
           <div style={{ marginBottom: '3rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span style={{ fontWeight: 600 }}>Implied Odds</span>
-              <span style={{ color: 'var(--text-dim)' }}>{totalPool} USDC Total Pool</span>
+              <span style={{ color: 'var(--text-dim)' }}>{totalPool} MON Total Pool</span>
             </div>
             <OddsBar yesPct={data.yesPct} noPct={data.noPct} />
           </div>
@@ -112,7 +107,7 @@ export const Market = ({ signer, account }) => {
                 </div>
 
                 <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Amount (USDC)</label>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-dim)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Amount (MON)</label>
                     <input 
                         type="number" 
                         value={amount}
@@ -134,7 +129,7 @@ export const Market = ({ signer, account }) => {
                 <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1rem', borderRadius: 12, marginBottom: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                         <span style={{ color: 'var(--text-dim)' }}>Est. Payout</span>
-                        <span style={{ fontWeight: 600, color: '#10b981' }}>{estPayout.toFixed(2)} USDC</span>
+                        <span style={{ fontWeight: 600, color: '#10b981' }}>{estPayout.toFixed(2)} MON</span>
                     </div>
                 </div>
 
@@ -149,7 +144,7 @@ export const Market = ({ signer, account }) => {
                         fontSize: '1.1rem'
                     }}
                 >
-                    {allowance < rawAmount ? "Approve USDC" : "Place Bet"}
+                    Place Bet
                 </button>
                 
                 <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.75rem', color: 'var(--text-dim)' }}>

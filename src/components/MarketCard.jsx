@@ -13,7 +13,7 @@ export const MarketCard = ({ address, signer }) => {
 
   if (loading || !data.question) return <div className="glass-card" style={{ height: 260, opacity: 0.5 }}>Loading...</div>;
 
-  const totalPool = ethers.formatUnits(data.yesPool + data.noPool, 6);
+  const totalPool = ethers.formatEther(data.yesPool + data.noPool);
 
   return (
     <motion.div 
@@ -42,7 +42,7 @@ export const MarketCard = ({ address, signer }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
         <div>
           <p style={{ color: 'var(--text-dim)', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Total Pool</p>
-          <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>{totalPool} USDC</p>
+          <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>{totalPool} MON</p>
         </div>
         
         <button 

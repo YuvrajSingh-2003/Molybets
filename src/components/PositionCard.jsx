@@ -83,18 +83,18 @@ export const PositionCard = ({ campaignAddress, tokenId, signer, account }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <div>
           <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', fontWeight: 700 }}>INVESTED</p>
-          <p style={{ fontSize: '1rem', fontWeight: 600 }}>{ethers.formatUnits(details.stake, 6)} USDC</p>
+          <p style={{ fontSize: '1rem', fontWeight: 600 }}>{ethers.formatEther(details.stake)} MON</p>
         </div>
         <div>
           <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', fontWeight: 700 }}>CURRENT VALUE</p>
-          <p style={{ fontSize: '1rem', fontWeight: 600 }}>{ethers.formatUnits(details.value, 6)} USDC</p>
+          <p style={{ fontSize: '1rem', fontWeight: 600 }}>{ethers.formatEther(details.value)} MON</p>
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: pnl >= 0 ? '#10b981' : '#ef4444', fontSize: '0.9rem', fontWeight: 700 }}>
           {pnl >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-          {pnl >= 0 ? "+" : ""}{ethers.formatUnits(pnl, 6)} ({pnlPct.toFixed(2)}%)
+          {pnl >= 0 ? "+" : ""}{ethers.formatEther(pnl)} ({pnlPct.toFixed(2)}%)
         </div>
 
         {marketData.resolved ? (

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { CONFIG } from '../config';
-import MockUSDCAbi from '../abis/MockUSDC.json';
 
 export const useWallet = () => {
   const [account, setAccount] = useState(null);
@@ -68,13 +67,11 @@ export const useWallet = () => {
   };
 
   const fetchBalance = useCallback(async () => {
-    if (!account || !provider || CONFIG.MockUSDC === "FILL_ME") return;
+    if (!account || !provider) return;
 
     try {
-      const contract = new ethers.Contract(CONFIG.MockUSDC, MockUSDCAbi, provider);
-      const bal = await contract.balanceOf(account);
-      const decimals = await contract.decimals();
-      setBalance(ethers.formatUnits(bal, decimals));
+      const bal = await provider.getBalance(account);
+      setBalance(ethers.formatEther(bal));
     } catch (error) {
       console.error("Error fetching balance:", error);
     }

@@ -37,7 +37,7 @@ export const Header = ({ account, balance, connectWallet, isCorrectNetwork }) =>
           {account ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div className="glass-card" style={{ padding: '0.4rem 1rem', borderRadius: 12, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{parseFloat(balance).toFixed(2)} USDC</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{parseFloat(balance).toFixed(2)} MON</span>
               </div>
               <button 
                 className={isCorrectNetwork ? "glass-card" : "glass-card"}
