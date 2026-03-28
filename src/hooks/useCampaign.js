@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { CONFIG } from '../config';
 import CampaignAbi from '../abis/Campaign.json';
-import MockUSDCAbi from '../abis/MockUSDC.json';
 
 export const useCampaign = (address, signer, account) => {
   const [data, setData] = useState({
@@ -19,8 +18,6 @@ export const useCampaign = (address, signer, account) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError, setErrorState] = useState(null);
-  const [allowance, setAllowance] = useState(0n);
-
   const fetchCampaignData = useCallback(async () => {
     if (!address || !signer || address === "FILL_ME") return;
 
@@ -62,40 +59,17 @@ export const useCampaign = (address, signer, account) => {
         noPct: Number(odds[1]) / 100,
       });
 
-      // Fetch user allowance for MockUSDC
-      if (account) {
-        const usdc = new ethers.Contract(CONFIG.MockUSDC, MockUSDCAbi, signer);
-        const allow = await usdc.allowance(account, address);
-        setAllowance(allow);
-      }
     } catch (err) {
       console.error("Error fetching campaign data:", err);
     }
   }, [address, signer, account]);
-
-  const approveUSDC = async (amount) => {
-    if (!signer || !address) return;
-    setLoading(true);
-    try {
-      const usdc = new ethers.Contract(CONFIG.MockUSDC, MockUSDCAbi, signer);
-      const tx = await usdc.approve(address, amount);
-      await tx.wait();
-      await fetchCampaignData();
-      return tx.hash;
-    } catch (err) {
-      console.error("Approval error:", err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const join = async (side, amount) => {
     if (!signer) return;
     setLoading(true);
     try {
       const contract = new ethers.Contract(address, CampaignAbi, signer);
-      const tx = await contract.join(side, amount);
+      const tx = await contract.join(side, { value: amount });
       await tx.wait();
       await fetchCampaignData();
       return tx.hash;
@@ -142,5 +116,5 @@ export const useCampaign = (address, signer, account) => {
     return () => clearInterval(interval);
   }, [fetchCampaignData]);
 
-  return { data, loading, allowance, approveUSDC, join, resolve, claim, fetchCampaignData };
+  return { data, loading, join, resolve, claim, fetchCampaignData };
 };
