@@ -161,3 +161,19 @@ input:focus, select:focus {
 }
 
 .tx-link:hover { text-decoration: underline; }
+
+/* Spinner */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin { animation: spin 1s linear infinite; }
+
+/* Modal scroll lock */
+body.modal-open { overflow: hidden; }
+
+/* Number input — hide arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type='number'] { -moz-appearance: textfield; appearance: textfield; }

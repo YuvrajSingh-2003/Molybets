@@ -24,23 +24,26 @@ export const Positions = ({ signer, account }) => {
       const promises = campaigns.map(async (addr) => {
         const contract = new ethers.Contract(addr, CampaignAbi, signer);
         
-        // Filter Joined events for the current user
-        const filter = contract.filters.Joined(account);
-        const events = await contract.queryFilter(filter, -10000); // Last 10k blocks
-
-        // Get unique tokenIds from events
-        const tokenIds = [...new Set(events.map(e => e.args.tokenId))];
-        
-        // Only include those the user still owns
-        for (const tid of tokenIds) {
-          try {
-            const owner = await contract.ownerOf(tid);
-            if (owner.toLowerCase() === account.toLowerCase()) {
-              allPos.push({ campaign: addr, tokenId: tid });
+        try {
+          const tickets = await contract.getUserTickets(account);
+          
+          for (const tid of tickets) {
+            try {
+              // Check stake > 0 (not claimed/burned) AND that the account still owns it
+              // getUserTickets is append-only; tokens transferred away are still listed
+              const [stake, owner] = await Promise.all([
+                contract.tokenStake(tid),
+                contract.ownerOf(tid),
+              ]);
+              if (stake > 0n && owner.toLowerCase() === account.toLowerCase()) {
+                allPos.push({ campaign: addr, tokenId: tid });
+              }
+            } catch (e) {
+              // Ignore burned / nonexistent tokens (ownerOf throws on burned)
             }
-          } catch (e) {
-            console.error("Owner check failed for", tid, e);
           }
+        } catch (e) {
+          console.error("Failed to sync tickets for campaign", addr, e);
         }
       });
 

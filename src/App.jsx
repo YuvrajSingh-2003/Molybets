@@ -6,6 +6,7 @@ import { Markets } from './pages/Markets';
 import { Market } from './pages/Market';
 import { Positions } from './pages/Positions';
 import { Create } from './pages/Create';
+import { PaymentRequestBanner } from './components/PaymentRequestBanner';
 
 function App() {
   const wallet = useWallet();
@@ -35,6 +36,9 @@ function App() {
             &copy; 2026 Molybets · Built on Monad Testnet 🔮
           </p>
         </footer>
+
+        {/* Global payment request notification — visible on every page */}
+        <PaymentRequestBanner account={wallet.account} />
       </div>
     </Router>
   );
